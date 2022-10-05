@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	artikelsdto "journey/dto/artikel"
@@ -11,6 +12,8 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/mux"
@@ -35,9 +38,9 @@ func (h *handlerArtikel) FindArtikels(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(err)
 	}
 
-	for i, p := range artikels {
-		artikels[i].Image = os.Getenv("PATH_FILE") + p.Image
-	}
+	// for i, p := range artikels {
+	// 	artikels[i].Image = os.Getenv("PATH_FILE") + p.Image
+	// }
 
 	w.WriteHeader(http.StatusOK)
 	response := dto.SuccessResult{Code: http.StatusOK, Data: artikels}
@@ -59,7 +62,7 @@ func (h *handlerArtikel) GetArtikel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	artikel.Image = os.Getenv("PATH_FILE") + artikel.Image
+	// artikel.Image = os.Getenv("PATH_FILE") + artikel.Image
 
 	w.WriteHeader(http.StatusOK)
 	response := dto.SuccessResult{Code: http.StatusOK, Data: convertResponseArtikel(artikel)}
@@ -74,12 +77,12 @@ func (h *handlerArtikel) CreateArtikel(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(userId)
 	dataContex := r.Context().Value("dataFile")
-	filename := dataContex.(string)
+	filepath := dataContex.(string)
 
 	request := artikelsdto.CreateArtikelRequest{
 		Title:   r.FormValue("title"),
 		Desc:    r.FormValue("desc"),
-		Image:   filename,
+		Image:   filepath,
 		User_Id: userId,
 	}
 
@@ -92,9 +95,22 @@ func (h *handlerArtikel) CreateArtikel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var ctx = context.Background()
+	var CLOUD_NAME = os.Getenv("CLOUD_NAME")
+	var API_KEY = os.Getenv("API_KEY")
+	var API_SECRET = os.Getenv("API_SECRET")
+
+	cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
+
+	resp, err := cld.Upload.Upload(ctx, filepath, uploader.UploadParams{Folder: "journey"})
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
 	artikel := models.Artikel{
 		Title:  request.Title,
-		Image:  filename,
+		Image:  resp.SecureURL,
 		Desc:   request.Desc,
 		UserID: request.User_Id,
 	}
