@@ -80,9 +80,9 @@ func (h *handlerArtikel) CreateArtikel(w http.ResponseWriter, r *http.Request) {
 	filepath := dataContex.(string)
 
 	request := artikelsdto.CreateArtikelRequest{
-		Title: r.FormValue("title"),
-		Desc:  r.FormValue("desc"),
-		// Image:   filepath,
+		Title:   r.FormValue("title"),
+		Desc:    r.FormValue("desc"),
+		Image:   filepath,
 		User_Id: userId,
 	}
 

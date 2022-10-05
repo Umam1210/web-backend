@@ -25,7 +25,7 @@ func UploadFile(next http.HandlerFunc) http.HandlerFunc {
 		// fmt.Printf("Uploaded File: %+v\n", handler.Filename)
 		// fmt.Printf("File Size: %+v\n", handler.Size)
 		// fmt.Printf("MIME Header: %+v\n", handler.Header)
-		const MAX_UPLOAD_SIZE = 10 << 20 // 10MB
+		const MAX_UPLOAD_SIZE = 100 << 20 // 10MB
 		// Parse our multipart form, 10 << 20 specifies a maximum
 		// upload of 10 MB files.
 		r.ParseMultipartForm(MAX_UPLOAD_SIZE)
