@@ -14,6 +14,7 @@ func ArtikelRoutes(r *mux.Router) {
 	h := handlers.HandlerArtikel(artikelRepository)
 
 	r.HandleFunc("/artikels", h.FindArtikels).Methods("GET")
+	r.HandleFunc("/artikels/user/{user_id}", h.FindArtikelsbyUserId).Methods("GET")
 	r.HandleFunc("/artikel/{id}", h.GetArtikel).Methods("GET")
 	r.HandleFunc("/artikel", middleware.Auth(middleware.UploadFile(h.CreateArtikel))).Methods("POST")
 	r.HandleFunc("/artikel/{id}", h.UpdateArtikel).Methods("PATCH")

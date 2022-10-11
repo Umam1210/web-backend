@@ -1,6 +1,9 @@
 package artikelsdto
 
-import "journey/models"
+import (
+	"journey/models"
+	"time"
+)
 
 type ArtikelResponse struct {
 	ID     int         `json:"id"`
@@ -9,4 +12,5 @@ type ArtikelResponse struct {
 	Desc   string      `json:"desc" form:"desc" validate:"required"`
 	UserID int         `json:"user_id"`
 	User   models.User `json:"user"`
+	Date   time.Time   `json:"date"`
 }

@@ -175,11 +175,11 @@ func (h *handlerUser) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 func convertResponseUser(u models.User) usersdto.UserResponse {
 	return usersdto.UserResponse{
-		ID:       u.ID,
-		Name:     u.FullName,
-		Email:    u.Email,
-		Password: u.Password,
-		Phone:    u.Phone,
-		Addres:   u.Addres,
+		ID:    u.ID,
+		Name:  u.FullName,
+		Email: u.Email,
+		// Password: u.Password,
+		Phone:  u.Phone,
+		Addres: u.Addres,
 	}
 }

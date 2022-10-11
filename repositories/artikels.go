@@ -8,6 +8,7 @@ import (
 
 type ArtikelRepository interface {
 	FindArtikels() ([]models.Artikel, error)
+	FindArtikelsbyUserId(User_id int) ([]models.Artikel, error)
 	GetArtikel(ID int) (models.Artikel, error)
 	CreateArtikel(Artikel models.Artikel) (models.Artikel, error)
 	UpdateArtikel(Artikel models.Artikel) (models.Artikel, error)
@@ -21,6 +22,12 @@ func RepositoryArtikel(db *gorm.DB) *repository {
 func (r *repository) FindArtikels() ([]models.Artikel, error) {
 	var artikels []models.Artikel
 	err := r.db.Preload("User").Find(&artikels).Error
+
+	return artikels, err
+}
+func (r *repository) FindArtikelsbyUserId(User_id int) ([]models.Artikel, error) {
+	var artikels []models.Artikel
+	err := r.db.Preload("User").Find(&artikels, "user_id= ?", User_id).Error
 
 	return artikels, err
 }

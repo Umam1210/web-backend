@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
@@ -33,6 +34,25 @@ func (h *handlerArtikel) FindArtikels(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	artikels, err := h.ArtikelRepository.FindArtikels()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(err)
+	}
+
+	// for i, p := range artikels {
+	// 	artikels[i].Image = os.Getenv("PATH_FILE") + p.Image
+	// }
+
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Code: http.StatusOK, Data: artikels}
+	json.NewEncoder(w).Encode(response)
+}
+func (h *handlerArtikel) FindArtikelsbyUserId(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	user_id, _ := strconv.Atoi(mux.Vars(r)["user_id"])
+
+	artikels, err := h.ArtikelRepository.FindArtikelsbyUserId(user_id)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(err)
@@ -78,12 +98,14 @@ func (h *handlerArtikel) CreateArtikel(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(userId)
 	dataContex := r.Context().Value("dataFile")
 	filepath := dataContex.(string)
+	Date := time.Now()
 
 	request := artikelsdto.CreateArtikelRequest{
 		Title:   r.FormValue("title"),
 		Desc:    r.FormValue("desc"),
 		Image:   filepath,
 		User_Id: userId,
+		Date:    Date,
 	}
 
 	validation := validator.New()
@@ -113,6 +135,7 @@ func (h *handlerArtikel) CreateArtikel(w http.ResponseWriter, r *http.Request) {
 		Image:  resp.SecureURL,
 		Desc:   request.Desc,
 		UserID: request.User_Id,
+		Date:   request.Date,
 	}
 
 	data, err := h.ArtikelRepository.CreateArtikel(artikel)
@@ -207,5 +230,6 @@ func convertResponseArtikel(u models.Artikel) artikelsdto.ArtikelResponse {
 		Image: u.Image,
 		Desc:  u.Desc,
 		User:  u.User,
+		Date:  u.Date,
 	}
 }
